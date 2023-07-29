@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Transformer</title>
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Anuphan&family=Comme&family=DM+Sans:wght@500&family=Lato:ital@0;1&family=Lobster&family=Montserrat&family=Noto+Sans:ital,wght@1,300&family=Open+Sans:wght@500&family=PT+Sans&family=Poppins:ital,wght@0,400;1,500&family=Raleway&family=Roboto+Condensed&family=Roboto:wght@300;400;700&family=Ubuntu&display=swap');
+
+    body {
+        font-family: 'Poppins', sans-serif;
+    }
+
+    h1 {
+        text-align: center;
+        margin: 10px;
+        color: #088178;
+    }
+
+    form {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-block: 30px;
+    }
+
+    #input {
+        width: 75%;
+        padding: 10px 20px;
+        border: 1px solid black;
+        border-radius: 10px;
+        margin: 15px;
+    }
+
+    #input::-webkit-file-upload-button {
+        height: 35px;
+        background-color: #088178;
+        color: white;
+        outline: none;
+        border: 1px solid white;
+        border-radius: 7px;
+        width: 120px;
+        margin-right: 10px;
+        font-size: 14px;
+    }
+
+    #submit {
+        width: 170px;
+        height: 40px;
+        background-color: rgb(245, 226, 226);
+        color: #088178;
+        outline: none;
+        border: 1px solid white;
+        font-size: 17px;
+        border-radius: 7px;
+    }
+
+    .showMainDiv {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .showDiv {
+        width: 94%;
+        height: 40px;
+        margin-inline: 5%;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        border: 1.5px solid grey;
+        border-radius: 7px;
+    }
+</style>
+
+<body>
+    <h1>PDF Transformer</h1>
+    <form action="merge" enctype="multipart/form-data" method="post">
+        <input type="file" multiple accept=".pdf" name="pdfs" id="input">
+        <span style="margin-bottom: 10px;">Upto 10 pdfs only!</span>
+        <input type="submit" id="submit">
+    </form>
+    <div class="showMainDiv">
+        <div class="showDiv">
+            <span class="showName"></span>
+            <span class="showSize"></span>
+            <span class="showPages"></span>
+        </div>
+    </div>
+    <script>
+        let input = document.querySelector('#input');
+
+        input.addEventListener('change', (e) => {
+            let files = e.target.files;
+            let length = files.length - 1;
+
+            for (let i = 0; i < length; i++) {
+                let html = `<div class="showDiv"><span class="showName"></span><span class="showSize"></span><span class="showPages"></span></div>`
+                document.querySelector('.showMainDiv').innerHTML += html;
+            }
+
+            let showName = document.querySelectorAll('.showName');
+            let showSize = document.querySelectorAll('.showSize');
+            let showPages = document.querySelectorAll('.showPages');
+
+            Array.from(showName).forEach((e, i) => {
+                e.innerHTML = `Name: ${files[i].name}`
+            });
+            Array.from(showSize).forEach((e, i) => {
+                if (files[i].size > 1048576) {
+                    e.innerHTML = "Size: " + (files[i].size / 1048576).toFixed(2) + "Mb";
+                }
+                else {
+                    e.innerHTML = "Size: " + (files[i].size / 1024).toFixed(2) + "Kb";
+                }
+            });
+            Array.from(showPages).forEach((e, i) => {
+                let reader = new FileReader();
+                reader.readAsBinaryString(input.files[i]);
+                reader.onloadend = function () {
+                    let count = reader.result.match(/\/Type[\s]*\/Page[^s]/g).length;
+                    e.innerHTML = `Pages: ${count}`;
+                }
+            })
+            console.log(e, files)
+        })
+    </script>
+</body>
+
+</html>

@@ -49,7 +49,7 @@ app.post('/merge', upload.array('pdfs'), async (req, res) => {
         res.redirect("http://localhost:9999/static/mergedpdf.pdf")
     }
     else{
-        res.redirect("https://pdftransformer.onrender.com//static/mergedpdf.pdf")
+        res.redirect("https://pdftransformer.onrender.com/static/mergedpdf.pdf")
     }
     deleteAllFilesInDir('./uploads').then(() => {
         console.log('Removed all files from the specified directory');

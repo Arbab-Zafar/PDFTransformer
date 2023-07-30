@@ -101,7 +101,7 @@
             let files = e.target.files;
             let length = files.length - 1;
 
-            document.querySelector('#submit').disabled = "false";
+            document.querySelector('#submit').disabled = false;
 
             for (let i = 0; i < length; i++) {
                 let html = `<div class="showDiv"><span class="showName"></span><span class="showSize"></span><span class="showPages"></span></div>`

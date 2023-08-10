@@ -78,34 +78,52 @@
         border: 1.5px solid grey;
         border-radius: 7px;
     }
+
+    .pagesForm input {
+        width: 64px;
+        height: 38px;
+    }
+
+    .pagesForm div {
+        margin-bottom: 15px;
+        margin-right: 5px;
+    }
+
+    .toSpan{
+        margin-inline: 10px;
+    }
 </style>
 
 <body>
     <h1>PDF Transformer</h1>
-    <form action="merge" enctype="multipart/form-data" method="post">
-        <input type="file" multiple accept=".pdf" name="pdfs" id="input">
-        <span style="margin-bottom: 10px;">Upto 10 pdfs only!</span>
-        <input type="submit" id="submit" disabled="true">
-    </form>
-    <div class="showMainDiv">
-        <div class="showDiv">
-            <span class="showName"></span>
-            <span class="showSize"></span>
-            <span class="showPages"></span>
-        </div>
+    <div>
+        <form action="merge" enctype="multipart/form-data" method="post" target="_blank">
+            <input type="file" multiple accept=".pdf" name="pdfs" id="input">
+            <span style="margin-bottom: 10px;">Upto 10 pdfs only!</span>
+            <div class="showMainDiv">
+            </div>
+            <div class="pagesForm">
+            </div>
+            <input type="submit" id="submit" disabled="true">
+        </form>
     </div>
     <script>
         let input = document.querySelector('#input');
 
         input.addEventListener('change', (e) => {
             let files = e.target.files;
-            let length = files.length - 1;
+            let length = files.length;
+            console.log('lenght', length)
 
             document.querySelector('#submit').disabled = false;
 
             for (let i = 0; i < length; i++) {
-                let html = `<div class="showDiv"><span class="showName"></span><span class="showSize"></span><span class="showPages"></span></div>`
+                console.log("a")
+                let html = `<div class="showDiv"><span class="showName"></span><span class="showSize"></span><span class="showPages"></span></div>`;
+                let html2 = `<div><span>Pages of PDF ${files[i].name}: </span><input type="number" name="pdf${i + 1}PagesFrom" class="inputFrom"><span class="toSpan">to</span><input type="number" name="pdf${i + 1}PagesTo" class="inputTo"></div>`
+
                 document.querySelector('.showMainDiv').innerHTML += html;
+                document.querySelector('.pagesForm').innerHTML += html2;
             }
 
             let showName = document.querySelectorAll('.showName');
@@ -117,22 +135,32 @@
             });
             Array.from(showSize).forEach((e, i) => {
                 if (files[i].size > 1048576) {
-                    e.innerHTML = "Size: " + (files[i].size / 1048576).toFixed(2) + "Mb";
+                    let size = "Size: " + (files[i].size / 1048576).toFixed(2) + "Mb"
+                    e.innerHTML = size;
                 }
                 else {
-                    e.innerHTML = "Size: " + (files[i].size / 1024).toFixed(2) + "Kb";
+                    let size = "Size: " + (files[i].size / 1024).toFixed(2) + "Kb"
+                    e.innerHTML = size;
                 }
             });
+            let inputTo = document.querySelectorAll('.inputTo')
+            let inputFrom = document.querySelectorAll('.inputFrom')
             Array.from(showPages).forEach((e, i) => {
                 let reader = new FileReader();
                 reader.readAsBinaryString(input.files[i]);
                 reader.onloadend = function () {
                     let count = reader.result.match(/\/Type[\s]*\/Page[^s]/g).length;
                     e.innerHTML = `Pages: ${count}`;
+                    inputTo[i].value = count;
+                    inputFrom[i].value = 1;
+                    inputTo[i].setAttribute('max', count);
+                    inputFrom[i].setAttribute('max', count);
+                    inputTo[i].setAttribute('min', 1);
+                    inputFrom[i].setAttribute('min', 1);
                 }
             })
             console.log(e, files)
-        })
+        });
     </script>
 </body>
 
